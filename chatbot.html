@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Floating Botpress Chat</title>
+
+    <!-- ResponsiveVoice for Text-to-Speech -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=tNuL6DIz"></script>
+
+    <!-- Botpress Webchat -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js"></script>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f8c8dc;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden; /* Prevents scrollbars when chat is open */
+        }
+        
+        /* * 1. Target the main Botpress container when it's open (bp-widget-body is a good target 
+         * that includes the iframe, but we'll target the outer container for safer positioning).
+         * * Note: Botpress usually sets the widget to 'position: fixed; bottom: 20px; right: 20px;'. 
+         * We override these values using !important to force it to the center.
+         */
+        
+        .bp-widget-container {
+            /* * This ensures the chat widget itself (when open) is fixed to the center.
+             * The small floating button will remain in the bottom corner, but the large chat window will center. 
+             */
+            top: 50% !important;
+            left: 50% !important;
+            right: auto !important; /* Undo default positioning */
+            bottom: auto !important; /* Undo default positioning */
+            transform: translate(-50%, -50%) !important;
+            
+            /* Define size for the centered chat window */
+            width: 400px !important; 
+            height: 600px !important;
+            margin: 0 !important;
+            
+            /* Ensure it sits above other page elements */
+            z-index: 1000 !important;
+            
+            /* Add some aesthetic improvements to the centered box */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+            border-radius: 16px !important;
+        }
+
+        /* Styling for the floating button */
+        .bp-floating-button {
+            z-index: 1001 !important; /* Keep the button above the chat window */
+            background-color: #3276EA !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .bp-floating-button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Ensure the iframe inside maintains the aesthetic */
+        .bp-widget-container iframe {
+            border-radius: 16px !important;
+            border: none !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- The Botpress script will inject the floating button here -->
+
+    <script>
+        let userInteracted = false;
+        
+        // This function is necessary to unlock audio playback in browsers
+        const unlockAudio = () => {
+            if (!userInteracted) {
+                userInteracted = true;
+                const utterance = new SpeechSynthesisUtterance('');
+                speechSynthesis.speak(utterance);
+                window.removeEventListener("click", unlockAudio);
+                window.removeEventListener("keydown", unlockAudio);
+            }
+        };
+
+        // Initialize Botpress with the floating widget settings
+        function initBotpress(retries = 10) {
+            if (window.botpress && window.botpress.init) {
+                console.log(" Initializing Botpress Floating Widget...");
+
+                window.botpress.init({
+                    botId: "d7e10866-5112-4567-9601-7f657917e74d",
+                    clientId: "2f7ccd3b-f9f3-4beb-bc32-555fa4577136",
+                    // NOTE: Removed 'selector' and set 'embedded: false' (by omission) 
+                    // to use the default floating widget behavior.
+                    configuration: {
+                        version: "v2",
+                        hideWidget: false, // Ensure the floating button is visible
+                        themeMode: "dark",
+                        botName: "Your Brand Assistant",
+                        color: "#3276EA",
+                        variant: "solid",
+                        headerVariant: "glass",
+                        radius: 3,
+                        fontFamily: "Abhaya Libre",
+                        feedbackEnabled: false,
+                        soundEnabled: false,
+                    }
+                });
+
+                window.botpress.on("webchat:ready", () => {
+                    console.log(" Botpress ready. Listening for incoming messages for TTS.");
+
+                    // Attach event listeners for audio unlock on user interaction
+                    window.addEventListener("click", unlockAudio);
+                    window.addEventListener("keydown", unlockAudio);
+                    
+                    // Set up the voice response listener
+                    window.botpress.on("incoming_message", (event) => {
+                        const text = event.payload?.text || event.payload?.title || event.preview;
+                        if (userInteracted && text) {
+                            responsiveVoice.cancel();
+                            // Use a more appropriate voice name if available, or stick to a standard one
+                            responsiveVoice.speak(text, "UK English Male");
+                        }
+                    });
+                });
+            } else if (retries > 0) {
+                console.warn("⏳ Botpress not ready, retrying...");
+                setTimeout(() => initBotpress(retries - 1), 500);
+            } else {
+                console.error("Failed to initialize Botpress WebChat");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initBotpress);
+    </script>
+</body>
+
+</html>

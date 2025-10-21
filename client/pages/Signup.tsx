@@ -118,7 +118,6 @@ const Signup = () => {
     { src: "https://api.builder.io/api/v1/image/assets/TEMP/4717ac53571d3925daec07823c7b336e0c523ad0?width=432", ratio: "4/3" },
     { src: "https://api.builder.io/api/v1/image/assets/TEMP/b08fd0c396ed2556ed78c4017344871fa14926b8?width=400", ratio: "3/2" },
   ];
-console.log("Form data:", { name, email, age, year, branch });
 
   return (
     <section className="relative min-h-[900px] bg-white">
@@ -142,7 +141,7 @@ console.log("Form data:", { name, email, age, year, branch });
         <div className="flex justify-center">
           <motion.div
             variants={fadeSlide}
-            className="w-full max-w-8xl bg-white/90 backdrop-blur-sm rounded-[50px] p-8 md:p-12"
+            className="w-full max-w-8xl bg-white/40 backdrop-blur-sm rounded-[50px] p-8 md:p-12"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 text-beacon-blue font-lato">
               Create Your Account
@@ -246,14 +245,7 @@ console.log("Form data:", { name, email, age, year, branch });
                 Create Account
               </button>
 
-              {/* Optional Google Signup */}
-              <button
-                type="button"
-                onClick={handleGoogleSignup}
-                className="w-full mt-4 bg-blue-500 text-white text-xl md:text-2xl py-4 rounded-lg font-lato hover:bg-blue-600 transition-colors"
-              >
-                Sign Up with Google
-              </button>
+             
 
               <div className="text-center space-y-2 mt-4">
                 <a href="/" className="text-blue-600 text-2xl block">
@@ -266,6 +258,8 @@ console.log("Form data:", { name, email, age, year, branch });
       </motion.div>
     </section>
   );
+  console.log("Form data:", { name, email, age, year, branch });
+
 };
 
 export default Signup;

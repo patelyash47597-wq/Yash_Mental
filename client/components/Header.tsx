@@ -19,7 +19,7 @@ export default function Header() {
           </div>
           <div>
             <button className="bg-red-600 text-2xl  text-white px-7 py-4 rounded-lg font-lato hover:bg-red-700 transition-colors">
-              Sign Up
+            <a href="/signup">Sign Up</a>
             </button>
           </div>
         </div>

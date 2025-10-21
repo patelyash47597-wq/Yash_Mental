@@ -5,6 +5,7 @@ import Data from "../components/cardDetails/storage.json";
 type Img = { src: string; ratio: string };
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/firebase/firebaseConfig";
+import { getDoc, doc } from "firebase/firestore";
 const handleGoogleLogin = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
