@@ -10,9 +10,9 @@ OLLAMA_URL = os.environ.get('OLLAMA_BASE_URL', 'http://localhost:11434/api/gener
 # You must set your preferred model here.
 MODEL_NAME = os.environ.get('OLLAMA_MODEL', 'llama3') 
 
-app = Flask(__name__)
+mira_app = Flask(__name__)
 # Enable CORS to allow requests from the client on a different port
-CORS(app) 
+CORS(mira_app) 
 
 # Global state to hold the chat history for the session
 chat_history = [] 
@@ -84,7 +84,7 @@ def call_ollama(messages):
 
 # --- Flask Endpoints ---
 
-@app.route('/api/chat', methods=['POST'])
+@mira_app.route('/api/chat', methods=['POST'])
 def chat():
     """Handles the user message, updates history, calls Ollama, and returns the structured response."""
     global chat_history
@@ -118,7 +118,7 @@ def chat():
             "meme_url": "[https://placehold.co/400x300/FF0000/FFFFFF?text=Connection+Error](https://placehold.co/400x300/FF0000/FFFFFF?text=Connection+Error)"
         }), 500
 
-@app.route('/api/reset', methods=['POST'])
+@mira_app.route('/api/reset', methods=['POST'])
 def reset_chat():
     """Resets the server-side chat history."""
     global chat_history
@@ -126,11 +126,18 @@ def reset_chat():
     print("Chat history reset by client request.")
     return jsonify({"status": "success", "message": "Chat history cleared"}), 200
 
-@app.route('/')
+@mira_app.route('/')
 def status_check():
+    """
+    The `status_check` function returns a message indicating that the Mira Chatbot API is running.
+    :return: The `status_check` function returns a tuple containing a message "Mira Chatbot API is
+    running. Use /api/chat for conversation." and a status code 200.
+    """
     """Simple route to check if the server is running."""
     return "Mira Chatbot API is running. Use /api/chat for conversation.", 200
 
-if __name__ == '__main__':
-    print("Starting Flask server on [http://127.0.0.1:5000](http://127.0.0.1:5000)")
-    app.run(debug=True, port=5000)
+# if __name__ == '__main__':
+#      from main import *
+#      print("Starting Flask server on [http://127.0.0.1:5000](http://127.0.0.1:5000)")
+if __name__ == "__main__":
+    pass

@@ -8,11 +8,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // --- Page Imports (Ensure these paths are correct in your project) ---
 import Index from "./pages/Index";
+
 import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
-import Heat from "./pages/heatmap";
-import IB from "./pages/Image"; // Assuming your component is exported as 'Image' from this file
+import ThoughtDetox from "./pages/Calender";
+import IB from "./pages/Image"; 
 import MentalHealthQuiz from "./pages/MentalHealthQuiz";
+import Diary from "./pages/Diary";
+import SafeSpace from "./pages/SafeSpace";
+import MusicAssistant from "./components/Music";
 // --------------------------------------------------------------------
 
 const queryClient = new QueryClient();
@@ -27,10 +31,13 @@ const App = () => (
           {/* Main Routes */}
           <Route path="/" element={<Index />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/heatmap" element={<Heat />} />
+         <Route path="/Detox" element={<ThoughtDetox/>}/>
           <Route path="/IB" element={<IB />} />
           <Route path="/quiz" element={<MentalHealthQuiz />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/diary" element={<Diary/>}/>
+          <Route path="/Safespace" element={<SafeSpace/>}/>
+          <Route path="/music" element={<MusicAssistant/>}/>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

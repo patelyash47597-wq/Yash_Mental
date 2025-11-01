@@ -464,18 +464,20 @@ export default function Index() {
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {[
-              "Image Therapy",
-              "AI ChatBot",
-              "Detox Diary",
-              "Stress HeatMap",
-              "Safe Space", 
+              { name: "Image Therapy", url: "/IB" },
+              { name: "AI ChatBot", url: "/chatbot" },
+              { name: "Detox Bin", url: "/Detox" },
+              { name: "Diary", url: "/diary" },
+              { name: "Safe Space", url: "/Safespace" },
             ].map((feature) => (
-              <button
-                key={feature}
+              <a
+                key={feature.name}
+                href={feature.url} // Use the href attribute for the link
+                // className attributes remain the same for styling
                 className="bg-beacon-beige text-xl md:text-3xl font-baloo px-8 py-4 rounded-[50px] hover:bg-gray-200 transition-colors"
               >
-                {feature}
-              </button>
+                {feature.name}
+              </a>
             ))}
           </div>
         </div>
