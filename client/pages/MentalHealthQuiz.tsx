@@ -20,7 +20,7 @@ const questions = [
 
 const options = [
   "Not at all",
-  "Several days",
+  "Few Days",
   "More than half the days",
   "Nearly every day"
 ];
@@ -43,27 +43,26 @@ export default function MentalHealthQuiz() {
     let feedback = "";
 
     if (total <= 10)
-      feedback = `Mild (Score: ${total}) 🟢 — Try Yoga, Music & Journaling`;
+      feedback = `🟢 Mild (Score: ${total}) — Try Yoga, Music & Journals`;
     else if (total <= 25)
-      feedback = `Moderate (Score: ${total}) 🟡 — Peer Support & Positive Talk`;
+      feedback = `🟡 Moderate (Score: ${total}) — Peer Support & Positive Talk`;
     else
-      feedback = `Severe (Score: ${total}) 🔴 — Consider Professional Counselling`;
+      feedback = `🔴 Severe (Score: ${total}) — Consider Professional Counselling`;
 
     setResult(feedback);
   };
 
   if (result)
     return (
-      <div className="min-h-screen flex items-center justify-center  p-4 bg-[conic-gradient(var(--tw-gradient-stops))]
-
-from-[#4f49ca]
-via-[#818cf8]
-to-[#c7d2fe]" >
-        <div className="bg-white shadow-2xl rounded-2xl p-10 max-w-xl w-full text-center">
-          <h2 className="text-2xl font-bold mb-4">{result}</h2>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-r from-purple-400 via-pink-300 to-blue-200">
+        <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-xl w-full text-center animate-fadeIn">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">{result}</h2>
+          <p className="text-gray-600 mb-6">
+            Thank you for completing the self-assessment. Remember, this is only a guideline.
+          </p>
           <button
             onClick={() => (window.location.href = "/services")}
-            className="mt-4 bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 text-lg"
+            className="mt-4 bg-green-600 text-white px-8 py-3 rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg font-semibold"
           >
             🌐 Explore Services
           </button>
@@ -72,58 +71,74 @@ to-[#c7d2fe]" >
     );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-bl from-[#ffe4e6]  to-[#ccfbf1] p-4">
-      <div className="bg-white shadow-2xl rounded-2xl p-10 max-w-8xl w-full min-h-screen">
-        <h2 className="text-center text-2xl font-bold mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#ffe4e6] to-[#ccfbf1] p-4">
+      <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-4xl w-full animate-fadeIn">
+        <h2 className="text-center text-5xl md:text-6xl font-extrabold mb-8 text-purple-700">
           Mental Health Self-Assessment
         </h2>
 
-        <h3 className="text-lg font-semibold mb-4">
-          {current + 1}. {questions[current]}
-        </h3>
+        <div className="mb-6">
+          <h3 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
+            {current + 1}. {questions[current]}
+          </h3>
 
-        <div className="space-y-3">
-          {options.map((opt, index) => (
-            <label
-              key={index}
-              className="block bg-gray-100 hover:bg-blue-100 cursor-pointer px-4 py-3 rounded-lg"
-            >
-              <input
-                type="radio"
-                checked={answers[current] === index}
-                onChange={() => {
-                  const newAns = [...answers];
-                  newAns[current] = index;
-                  setAnswers(newAns);
-                }}
-                className="mr-2"
-              />
-              {opt}
-            </label>
-          ))}
+          <div className="grid gap-4 md:gap-6">
+            {options.map((opt, index) => (
+              <label
+                key={index}
+                className={`block px-5 py-4 rounded-xl cursor-pointer transition-all duration-300
+                  ${answers[current] === index
+                    ? "bg-purple-200 border-2 border-purple-500"
+                    : "bg-gray-100 hover:bg-purple-100"}`
+                }
+              >
+                <input
+                  type="radio"
+                  checked={answers[current] === index}
+                  onChange={() => {
+                    const newAns = [...answers];
+                    newAns[current] = index;
+                    setAnswers(newAns);
+                  }}
+                  className="mr-3 accent-purple-600 scale-125"
+                />
+                <span className="text-gray-700 text-lg md:text-xl">{opt}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-8">
           <button
             onClick={prev}
             disabled={current === 0}
-            className={`px-4 py-2 rounded-lg text-white ${
-              current === 0
+            className={`px-6 py-3 rounded-xl text-white font-semibold transition-all duration-300
+              ${current === 0
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+                : "bg-purple-600 hover:bg-purple-700 shadow-md"}`
+            }
           >
             ← Prev
           </button>
 
           <button
             onClick={next}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            className="px-6 py-3 rounded-xl bg-purple-600 text-white hover:bg-purple-700 shadow-md font-semibold transition-all duration-300"
           >
             {current === questions.length - 1 ? "Submit" : "Next →"}
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

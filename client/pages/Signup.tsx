@@ -141,7 +141,7 @@ const Signup = () => {
         <div className="flex justify-center">
           <motion.div
             variants={fadeSlide}
-            className="w-full max-w-8xl bg-white/40 backdrop-blur-sm rounded-[50px] p-8 md:p-12"
+            className="w-full max-w-6xl bg-white/80 backdrop-blur-sm rounded-[50px] p-8 md:p-12 m-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 text-beacon-blue font-lato">
               Create Your Account

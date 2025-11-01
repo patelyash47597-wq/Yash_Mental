@@ -187,7 +187,7 @@ export default function Index() {
               variants={fadeSlide}
               className="flex justify-center lg:justify-end"
             >
-              <div className="w-full max-w-md bg-white/40 backdrop-blur-sm rounded-[50px] p-8 m-4 md:p-12">
+              <div className="w-full max-w-md bg-white/40 backdrop-blur-sm rounded-[50px] py-10 m-10  px-10 md:p-10">
                 <form onSubmit={handleLogin} className="space-y-6">
                   <div>
                     <label className="text-xl md:text-2xl font-lato text-gray-900">
@@ -263,7 +263,7 @@ export default function Index() {
 
       {/* Inner Beacon Section (image left, text right) */}
       <section className="py-10 bg-white">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-12 text-center md:text-left">
+        <div className="container mx-auto px-4 flex flex-row md:flex-row items-center justify-center gap-12 text-center md:text-left">
           <img
             src="https://api.builder.io/api/v1/image/assets/TEMP/01076e436641f5b8efc63ed0a24537c67d0f1c5c?width=754"
             alt="Meditation"
@@ -464,11 +464,11 @@ export default function Index() {
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {[
-              "Online Therapy",
+              "Image Therapy",
               "AI ChatBot",
               "Detox Diary",
               "Stress HeatMap",
-              "Avatar",
+              "Safe Space", 
             ].map((feature) => (
               <button
                 key={feature}
