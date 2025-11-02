@@ -7,15 +7,15 @@ const questions = [
   "Feeling tired or having little energy",
   "Poor appetite or overeating",
   "Feeling nervous, anxious, or on edge",
-  "Not being able to stop worrying",
-  "Trouble relaxing",
-  "Feeling irritable or easily annoyed",
-  "Feeling afraid as if something awful might happen",
-  "Have you been able to concentrate well?",
-  "Have you been feeling confident in yourself?",
-  "Have you felt capable of making decisions?",
-  "Have you enjoyed your daily activities?",
-  "Have you felt unhappy or depressed?"
+  // "Not being able to stop worrying",
+  // "Trouble relaxing",
+  // "Feeling irritable or easily annoyed",
+  // "Feeling afraid as if something awful might happen",
+  // "Have you been able to concentrate well?",
+  // "Have you been feeling confident in yourself?",
+  // "Have you felt capable of making decisions?",
+  // "Have you enjoyed your daily activities?",
+  // "Have you felt unhappy or depressed?"
 ];
 
 const options = [
@@ -26,6 +26,7 @@ const options = [
 ];
 
 export default function MentalHealthQuiz() {
+   
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>(Array(questions.length).fill(-1));
   const [result, setResult] = useState<string | null>(null);
@@ -37,20 +38,27 @@ export default function MentalHealthQuiz() {
   };
 
   const prev = () => current > 0 && setCurrent(current - 1);
+const [servicePage, setServicePage] = useState<string>("");
 
-  const calculate = () => {
-    const total = answers.reduce((a, b) => a + b, 0);
-    let feedback = "";
+const calculate = () => {
+  const total = answers.reduce((a, b) => a + b, 0);
+ let feedback = "";
+  let  page= "";
 
-    if (total <= 10)
-      feedback = `🟢 Mild (Score: ${total}) — Try Yoga, Music & Journals`;
-    else if (total <= 25)
-      feedback = `🟡 Moderate (Score: ${total}) — Peer Support & Positive Talk`;
-    else
-      feedback = `🔴 Severe (Score: ${total}) — Consider Professional Counselling`;
+  if (total <= 20) {
+    feedback = `🟢 Mild (Score: ${total}) — Try Yoga, Music & Journals`;
+    page = "/mild"; // page for mild
+  } else if (total <= 25) {
+    feedback = `🟡 Moderate (Score: ${total}) — Peer Support & Positive Talk`;
+    page = "/moderate"; // page for moderate
+  } else {
+    feedback = `🔴 Severe (Score: ${total}) — Consider Professional Counselling`;
+    page = "/Severe"; // page for severe
+  }
 
-    setResult(feedback);
-  };
+  setResult(feedback);
+  setServicePage(page); // store page URL
+};
 
   if (result)
     return (
@@ -61,7 +69,7 @@ export default function MentalHealthQuiz() {
             Thank you for completing the self-assessment. Remember, this is only a guideline.
           </p>
           <button
-            onClick={() => (window.location.href = "/services")}
+            onClick={() => (window.location.href = servicePage )}
             className="mt-4 bg-green-600 text-white px-8 py-3 rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg font-semibold"
           >
             🌐 Explore Services

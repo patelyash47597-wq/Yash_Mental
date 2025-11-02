@@ -2,17 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Diary from './Diary';
 import IB from './Image';
 
-// --- SOUNDSCAPE OPTIONS ---
-// UPDATED: Using more stable, directly playable MP3 links.
 const SOUNDSCAPES = [
-    { value: '', label: '-- Select --' },
-    // Reliable Rain Sound
-    { value: 'https://cdn.jsdelivr.net/gh/dev-x-files/public-assets@main/audio/rain-ambient.mp3', label: 'Rain' },
-    // Reliable Ocean Waves Sound
-    { value: 'https://cdn.jsdelivr.net/gh/dev-x-files/public-assets@main/audio/ocean-waves.mp3', label: 'Ocean Waves' },
-    // Reliable Forest Sound
-    { value: 'https://cdn.jsdelivr.net/gh/dev-x-files/public-assets@main/audio/forest-birds.mp3', label: 'Forest' },
+  { value: '', label: '-- Select --' },
+  { value: 'https://dl.sndup.net/9t2j/rain_relax.mp3', label: 'Rain' },
+  { value: 'https://dl.sndup.net/7sq8/ocean_waves.mp3', label: 'Ocean Waves' },
+  { value: 'https://dl.sndup.net/5qbn/forest_sounds.mp3', label: 'Forest' },
 ];
+
 
 // --- SESSION OPTIONS ---
 const SESSION_DURATIONS = [

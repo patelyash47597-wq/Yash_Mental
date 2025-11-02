@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { motion, Variants } from "framer-motion";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import Data from "../components/cardDetails/storage.json";
 type Img = { src: string; ratio: string };
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "@/firebase/firebaseConfig";
+import { auth, googleProvider,db } from "@/firebase/firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 const handleGoogleLogin = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -79,11 +81,51 @@ export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showCards, setShowCards] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const redirectBasedOnRole = async (uid: string) => {
+const userRef = doc(db, "users", uid);
+const userSnap = await getDoc(userRef);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Login attempt:", { email, password });
-  };
+
+if (!userSnap.exists()) {
+alert("User not registered in Firestore!");
+return;
+}
+
+
+const role = userSnap.data().role;
+if (role === "student") navigate("/");
+else if (role === "counselor") navigate("/counselor");
+else alert("Role not assigned. Contact admin.");
+};
+
+
+const handleGoogleLogin = async () => {
+try {
+setLoading(true);
+const result = await signInWithPopup(auth, googleProvider);
+await redirectBasedOnRole(result.user.uid);
+} catch (err) {
+console.error(err);
+alert("Google login failed");
+}
+setLoading(false);
+};
+
+
+const handleEmailLogin = async (e: any) => {
+e.preventDefault();
+try {
+setLoading(true);
+const result = await signInWithEmailAndPassword(auth, email, password);
+await redirectBasedOnRole(result.user.uid);
+} catch (err) {
+console.error(err);
+alert("Invalid credentials");
+}
+setLoading(false);
+};
 
   // image rows (compact sizes)
   const row1: Img[] = [
@@ -662,19 +704,23 @@ export default function Index() {
             <span className="font-bowlby text-beacon-blue">Beacon</span>
           </h2>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            {["Article", "Music", "Diary", "SafeSpace", "Meditation Video"].map(
-              (tab) => (
-                <button
-                  key={tab}
-                  className="bg-green-600 text-white text-2xl md:text-3xl font-lato font-bold px-8 py-4 rounded-3xl border-2 border-black hover:bg-green-700 transition-colors"
-                >
-                  {tab}
-                </button>
-              ),
-            )}
-          </div>
-
+<div className="flex flex-wrap justify-center gap-4 mb-12">
+  {[
+    { name: "Article", path: "/article" },
+    { name: "Music", path: "/music" },
+    { name: "Diary", path: "/diary" },
+    { name: "SafeSpace", path: "/safespace" },
+    { name: "Meditation Video", path: "/meditation-video" }
+  ].map((tab) => (
+    <Link key={tab.name} to={tab.path}>
+      <button
+        className="bg-green-600 text-white text-2xl md:text-3xl font-lato font-bold px-8 py-4 rounded-3xl border-2 border-black hover:bg-green-700 transition-colors"
+      >
+        {tab.name}
+      </button>
+    </Link>
+  ))}
+</div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               "\"It's okay to not be okay — what matters is taking the next small step toward healing.\" Reminds people that healing isn't instant — it's progress, not perfection.",
