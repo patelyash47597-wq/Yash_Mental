@@ -5,10 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// --- Page Imports (Ensure these paths are correct in your project) ---
 import Index from "./pages/Index";
-
 import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
 import ThoughtDetox from "./pages/Calender";
@@ -20,7 +17,6 @@ import MusicAssistant from "./components/Music";
 import MildServices from "./pages/Mild";
 import ModerateServices from "./pages/Moderate";
 import SevereServices from "./pages/Severe";
-// --------------------------------------------------------------------
 
 const queryClient = new QueryClient();
 
@@ -31,7 +27,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Main Routes */}
           <Route path="/" element={<Index />} />
           <Route path="/signup" element={<Signup />} />
          <Route path="/Detox" element={<ThoughtDetox/>}/>

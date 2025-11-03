@@ -9,15 +9,15 @@ const questions = [
   "Feeling tired or having little energy",
   "Poor appetite or overeating",
   "Feeling nervous, anxious, or on edge",
-  // "Not being able to stop worrying",
-  // "Trouble relaxing",
-  // "Feeling irritable or easily annoyed",
-  // "Feeling afraid as if something awful might happen",
-  // "Have you been able to concentrate well?",
-  // "Have you been feeling confident in yourself?",
-  // "Have you felt capable of making decisions?",
-  // "Have you enjoyed your daily activities?",
-  // "Have you felt unhappy or depressed?"
+  "Not being able to stop worrying",
+  "Trouble relaxing",
+  "Feeling irritable or easily annoyed",
+  "Feeling afraid as if something awful might happen",
+  "Have you been able to concentrate well?",
+  "Have you been feeling confident in yourself?",
+  "Have you felt capable of making decisions?",
+  "Have you enjoyed your daily activities?",
+  "Have you felt unhappy or depressed?"
 ];
 
 const options = [
@@ -56,11 +56,11 @@ const calculate = async() => {
   if (total <= 20) {
     feedback = `🟢 Mild (Score: ${total}) — Try Yoga, Music & Journals`;
     page = "/mild"; 
-      let severity = "";
+      let severity = "mils";
   } else if (total <= 25) {
     feedback = `🟡 Moderate (Score: ${total}) — Peer Support & Positive Talk`;
     page = "/moderate"; 
-      let severity = "";
+      let severity = "moderate";
   } else {
     feedback = `🔴 Severe (Score: ${total}) — Consider Professional Counselling`;
     page = "/Severe"; 

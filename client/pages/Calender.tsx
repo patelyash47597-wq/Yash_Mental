@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Calendar, Sparkles, Moon, Sun, Settings, TrendingUp, Smile, Meh, Frown, BookOpen, Clock, Plus, X, CheckCircle, Brain, Zap, LucideIcon } from 'lucide-react';
 
-// --- TYPE DEFINITIONS (Interfaces) ---
 
-/** Represents a single quote entry. */
 interface Quote {
     text: string;
     author: string;
 }
-
-/** Defines the structure for the AI's response to a detox session. */
 interface AIResponse {
     quote: Quote;
     affirmation: string;
@@ -17,7 +13,7 @@ interface AIResponse {
     animation: 'celebrate' | 'breathe' | 'pulse' | 'sparkle';
 }
 
-/** Defines the structure for a single detox session history entry. */
+
 interface DetoxEntry {
     id: number;
     emotion: EmotionCategory | '';
@@ -29,13 +25,13 @@ interface DetoxEntry {
     response: AIResponse;
 }
 
-/** Defines the structure for a mood data point. */
+
 interface MoodData {
-    date: string; // ISO date string (YYYY-MM-DD)
-    mood: number; // Mood score (1-10)
+    date: string; 
+    mood: number; 
 }
 
-/** Defines the structure for a calendar event. */
+
 interface CalendarEvent {
     id: number;
     title: string;
@@ -323,8 +319,7 @@ const ThoughtDetox: React.FC = () => {
 
         // Update mood data
         const today = new Date().toISOString().split('T')[0];
-        // For happy emotions, higher intensity = better mood
-        // For other emotions, lower intensity = better mood
+        
         const moodScore = analysis.category === 'happy'
             ? thoughtData.intensity
             : 10 - thoughtData.intensity;

@@ -35,16 +35,27 @@ const Signup = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      const generateAnonymousUsername = () => {
+  const animals = ["Tiger", "Eagle", "Wolf", "Panther", "Falcon", "Lion"];
+  const adjectives = ["Silent", "Swift", "Mysterious", "Hidden", "Shadow", "Brave"];
+
+  const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+  const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const randomNum = Math.floor(100 + Math.random() * 900); // 3 digit
+
+  return `${randomAdj}${randomAnimal}_${randomNum}`;
+};
+   const anonymousUsername = generateAnonymousUsername();
+
 
       await setDoc(doc(db, "users", user.uid), {
-        name,
-        email,
-        age,
-        year,
-        branch,
-        role,
-        createdAt: new Date(),
-      });
+        name: user.displayName,
+  email: user.email,
+  photoURL: user.photoURL,
+  role: "student",
+  anonymousUsername: generateAnonymousUsername(),
+  createdAt: new Date(),
+});
 
       alert("Signup successful!");
       setEmail(""); setPassword(""); setName(""); setAge(""); setYear(""); setBranch("");

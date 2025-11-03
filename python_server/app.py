@@ -4,20 +4,19 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-# --- Configuration ---
-# You need to have Ollama running locally, usually on port 11434
+
 OLLAMA_URL = os.environ.get('OLLAMA_BASE_URL', 'http://localhost:11434/api/generate')
 # You must set your preferred model here.
 MODEL_NAME = os.environ.get('OLLAMA_MODEL', 'llama3') 
 
 mira_app = Flask(__name__)
-# Enable CORS to allow requests from the client on a different port
+
 CORS(mira_app) 
 
-# Global state to hold the chat history for the session
+
 chat_history = [] 
 
-# --- System Prompt and JSON Schema ---
+
 
 SYSTEM_PROMPT = """
 You are MIRA 💫, an empathetic and supportive emotional chatbot. Your primary goal is to act as a close friend, listen to the user, validate their feelings, and offer a comforting or relevant meme URL based on the detected emotion.
@@ -82,7 +81,7 @@ def call_ollama(messages):
         print(f"An unexpected error occurred: {e}")
         raise
 
-# --- Flask Endpoints ---
+
 
 @mira_app.route('/api/chat', methods=['POST'])
 def chat():

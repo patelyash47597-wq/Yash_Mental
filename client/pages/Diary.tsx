@@ -1,15 +1,12 @@
+// Diary.tsx
 import React, { useState, useEffect } from 'react';
-import { Smile, Frown, Meh, Globe, Save, Trash2, Zap, BookOpen, Mic } from 'lucide-react';
+import { Smile, Frown, Meh, Globe, Save, Trash2, Zap, BookOpen, Mic, Lock } from 'lucide-react';
 
-// --- TYPE DEFINITIONS ---
-
-/** Defines the mood score and detected language of an entry. */
 interface AnalysisResult {
-    moodScore: number; // e.g., 1 (negative) to 10 (positive)
-    language: string; // ISO 639-1 code (e.g., 'en', 'es', 'fr')
+    moodScore: number;
+    language: string;
 }
 
-/** Represents a single diary entry. */
 interface DiaryEntry {
     id: number;
     title: string;
@@ -18,61 +15,50 @@ interface DiaryEntry {
     analysis: AnalysisResult;
 }
 
-// --- FAKE SERVICE FUNCTIONS (Placeholder for NLP API) ---
-
+// --- Simple analyzer (unchanged) ---
 const analyzeEntry = (text: string, selectedLang: string): AnalysisResult => {
-    // In a real app, this would call an API for sentiment/language detection.
-    
-    let moodScore = 5; // Default neutral mood
+    let moodScore = 5;
     const lowerText = text.toLowerCase();
 
-    // Multilingual Positive/Negative Keywords (Simplified, now including Hindi/Indic words)
     const positiveWords = ['happy', 'joy', 'feliz', 'joie', 'glücklich', 'gut', 'good', 'amore', 'love', 'खुश', 'अच्छा', 'आनंद', 'मस्त', 'मजा'];
     const negativeWords = ['sad', 'angry', 'triste', 'fâché', 'traurig', 'bad', 'terrible', 'odio', 'hate', 'दुखी', 'गुस्सा', 'बुरा', 'खराब', 'तनाव'];
 
-    let positiveCount = 0;
-    let negativeCount = 0;
+    let positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
+    let negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
 
-    positiveWords.forEach(word => {
-        if (lowerText.includes(word)) positiveCount++;
-    });
-    
-    negativeWords.forEach(word => {
-        if (lowerText.includes(word)) negativeCount++;
-    });
+    if (positiveCount > negativeCount) moodScore = 7 + Math.min(3, positiveCount);
+    else if (negativeCount > positiveCount) moodScore = 4 - Math.min(3, negativeCount);
 
-    if (positiveCount > negativeCount) {
-        moodScore = 7 + Math.min(3, positiveCount); // max 10
-    } else if (negativeCount > positiveCount) {
-        moodScore = 4 - Math.min(3, negativeCount); // min 1
-    }
-    
-    // Ensure score is between 1 and 10
     moodScore = Math.max(1, Math.min(10, moodScore));
 
-    return {
-        moodScore: moodScore,
-        language: selectedLang || 'en',
-    };
+    return { moodScore, language: selectedLang || 'en' };
 };
-
-// --- LANGUAGE CONFIGURATION ---
 
 const languageOptions = [
     { code: 'en', name: 'English' },
-    { code: 'hi', name: 'हिंदी' }, // Added Hindi
+    { code: 'hi', name: 'हिंदी' },
     { code: 'es', name: 'Español' },
     { code: 'fr', name: 'Français' },
     { code: 'de', name: 'Deutsch' },
     { code: 'ja', name: '日本語' },
-    { code: 'mr', name: 'मराठी' }, // Added Marathi
-    { code: 'ta', name: 'தமிழ்' }, // Added Tamil
+    { code: 'mr', name: 'मराठी' },
+    { code: 'ta', name: 'தமிழ்' }
 ];
 
-// --- MAIN COMPONENT ---
+// Keys for localStorage fallback (only used when accountPassword prop not provided)
+const PASSWORD_KEY = "diary_password"; // fallback local password key
+const AUTH_KEY = "diary_authenticated";
 
-const App: React.FC = () => {
-    // State to hold all diary entries
+type Props = {
+    /**
+     * If provided, the diary lock will require this accountPassword to unlock.
+     * If not provided, component uses a localStorage-stored diary password and allows creation.
+     */
+    accountPassword?: string;
+};
+
+const Diary: React.FC<Props> = ({ accountPassword }) => {
+    // --- diary state (unchanged) ---
     const [entries, setEntries] = useState<DiaryEntry[]>(() => {
         try {
             const saved = localStorage.getItem('multilingualMoodDiaryEntries');
@@ -82,21 +68,54 @@ const App: React.FC = () => {
             return [];
         }
     });
-    
-    // State for the new entry form
+
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
     const [selectedLanguage, setSelectedLanguage] = useState(languageOptions[0].code);
-    const [isListening, setIsListening] = useState(false); // New state for voice input
+    const [isListening, setIsListening] = useState(false);
 
-    // Effect to persist entries to localStorage whenever they change
     useEffect(() => {
         localStorage.setItem('multilingualMoodDiaryEntries', JSON.stringify(entries));
     }, [entries]);
 
-    // Function to handle voice input
+    // --- lock states ---
+    const [passwordInput, setPasswordInput] = useState('');
+    const [newPassword, setNewPassword] = useState(''); // only used if no accountPassword and no saved password
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => localStorage.getItem(AUTH_KEY) === "true");
+
+    // Determine saved password: prefer accountPassword prop, otherwise localStorage
+    const savedPasswordFromStorage = typeof window !== "undefined" ? localStorage.getItem(PASSWORD_KEY) : null;
+    const savedPassword = accountPassword ?? savedPasswordFromStorage;
+
+    // --- Lock handlers ---
+    // If accountPassword prop is present, user must enter that to unlock.
+    // If accountPassword absent and no saved password in localStorage, we allow creation (set newPassword).
+    const handleSetPassword = () => {
+        if (!newPassword.trim()) return;
+        localStorage.setItem(PASSWORD_KEY, newPassword);
+        localStorage.setItem(AUTH_KEY, "true");
+        setIsAuthenticated(true);
+    };
+
+    const handleLogin = () => {
+        // compare against provided accountPassword (if present) or saved local password
+        if (passwordInput === savedPassword) {
+            localStorage.setItem(AUTH_KEY, "true");
+            setIsAuthenticated(true);
+        } else {
+            // simple feedback — in a real app show a toast / message
+            alert('Incorrect password. Please try again.');
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem(AUTH_KEY);
+        setIsAuthenticated(false);
+        setPasswordInput('');
+    };
+
+    // --- voice input (unchanged) ---
     const handleVoiceInput = () => {
-        // Use browser-prefixed API for compatibility
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
         if (!SpeechRecognition) {
@@ -107,16 +126,15 @@ const App: React.FC = () => {
         const recognition = new SpeechRecognition();
         recognition.interimResults = false;
         recognition.continuous = false;
-        recognition.lang = selectedLanguage; // Set language based on dropdown
+        recognition.lang = selectedLanguage;
 
         recognition.onstart = () => {
             setIsListening(true);
             console.log(`Listening started in language: ${selectedLanguage}`);
         };
 
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
+        recognition.onresult = (event: any) => {
             const transcript = event.results[0][0].transcript;
-            // Append the new transcript to the existing text, separated by a space
             setText(prevText => (prevText.trim() === '' ? transcript : prevText + ' ' + transcript));
         };
 
@@ -125,17 +143,14 @@ const App: React.FC = () => {
             console.log('Listening ended.');
         };
 
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        recognition.onerror = (event: any) => {
             setIsListening(false);
             console.error('Speech recognition error:', event.error);
         };
 
-        // Toggle listening state
         if (isListening) {
             recognition.stop();
         } else {
-            // Note: Starting recognition here is generally best practice, 
-            // but for a smooth user experience, we rely on the button click.
             try {
                 recognition.start();
             } catch (e) {
@@ -144,13 +159,12 @@ const App: React.FC = () => {
         }
     };
 
+    // --- diary actions (unchanged) ---
     const handleSaveEntry = () => {
         if (!text.trim()) return;
 
-        // 1. Analyze mood and language
         const analysis = analyzeEntry(text, selectedLanguage);
 
-        // 2. Create new entry
         const newEntry: DiaryEntry = {
             id: Date.now(),
             title: title || `Entry ${entries.length + 1}`,
@@ -159,19 +173,15 @@ const App: React.FC = () => {
             analysis: analysis,
         };
 
-        // 3. Add to state (newest first) and clear form
         setEntries([newEntry, ...entries]);
         setTitle('');
         setText('');
-        // Keep the selected language for convenience, but you could reset it
-        // setSelectedLanguage(languageOptions[0].code); 
     };
 
     const handleDeleteEntry = (id: number) => {
         setEntries(entries.filter(e => e.id !== id));
     };
 
-    // Helper to get a mood icon based on the score
     const getMoodIcon = (score: number) => {
         if (score >= 7) return <Smile className="w-5 h-5 text-green-500" />;
         if (score <= 4) return <Frown className="w-5 h-5 text-red-500" />;
@@ -184,6 +194,59 @@ const App: React.FC = () => {
         return 'bg-red-100 text-red-700';
     };
 
+    // --- LOCK UI (shown when not authenticated) ---
+    // If accountPassword prop provided => no "set password" option; show only entry box.
+    // If no accountPassword and no saved password => show set-password UI.
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 p-6">
+                <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md text-center">
+                    <Lock className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                    {(!savedPassword) ? (
+                        // No saved password in storage AND no accountPassword prop => allow creating a diary password
+                        <>
+                            <h2 className="text-xl font-bold mb-2">Set Diary Password</h2>
+                            <input
+                                type="password"
+                                className="w-full border p-2 rounded mb-3"
+                                placeholder="Create password"
+                                value={newPassword}
+                                onChange={e => setNewPassword(e.target.value)}
+                            />
+                            <button
+                                onClick={handleSetPassword}
+                                className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                            >
+                                Save Password
+                            </button>
+                            <p className="text-sm text-gray-500 mt-3">This password is stored locally in your browser.</p>
+                        </>
+                    ) : (
+                        // savedPassword exists (either accountPassword or saved local password) => prompt for it
+                        <>
+                            <h2 className="text-xl font-bold mb-2">Enter Password</h2>
+                            <input
+                                type="password"
+                                className="w-full border p-2 rounded mb-3"
+                                placeholder="Password"
+                                value={passwordInput}
+                                onChange={e => setPasswordInput(e.target.value)}
+                            />
+                            <button
+                                onClick={handleLogin}
+                                className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
+                            >
+                                Unlock Diary
+                            </button>
+                            <p className="text-sm text-gray-500 mt-3">Enter the password you created for your account (or the diary password if you set one here).</p>
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // --- MAIN DIARY UI (unchanged layout) ---
     return (
         <div className="min-h-screen bg-gray-50 font-sans p-4 md:p-8">
             <script src="https://cdn.tailwindcss.com"></script>
@@ -201,13 +264,18 @@ const App: React.FC = () => {
                     </h1>
                     <p className="text-gray-500 mt-2">Write, analyze your mood, and save in any language.</p>
                 </header>
-            
+
+                <div className="flex justify-between items-center mb-6">
+                    <div />
+                    <button onClick={handleLogout} className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-black text-sm">Lock Diary</button>
+                </div>
+
                 {/* --- 📝 New Entry Form --- */}
                 <div className="bg-white p-6 md:p-8 rounded-2xl shadow-purple border border-purple-200 mb-10">
                     <h2 className="text-2xl font-semibold mb-5 text-gray-700 border-b pb-3 flex items-center gap-2">
                         <Zap className="w-6 h-6 text-pink-500" /> New Reflection
                     </h2>
-                    
+
                     <input
                         type="text"
                         placeholder="Entry Title (Optional)"
@@ -215,8 +283,7 @@ const App: React.FC = () => {
                         onChange={(e) => setTitle(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-xl mb-4 focus:ring-purple-500 focus:border-purple-500 transition-shadow"
                     />
-                    
-                    {/* Text Area and Voice Input Button */}
+
                     <div className="flex gap-4 mb-4">
                         <textarea
                             placeholder="Write your thoughts here... (e.g., 'आज मैं बहुत खुश हूँ।')"
@@ -237,7 +304,6 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                        {/* Language Selector */}
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <label htmlFor="language-select" className="text-gray-600 font-medium whitespace-nowrap">
                                 <Globe className="w-5 h-5 inline mr-1 text-blue-500" /> Language:
@@ -253,8 +319,7 @@ const App: React.FC = () => {
                                 ))}
                             </select>
                         </div>
-                        
-                        {/* Save Button */}
+
                         <button
                             onClick={handleSaveEntry}
                             disabled={!text.trim()}
@@ -271,7 +336,7 @@ const App: React.FC = () => {
                     <h2 className="text-2xl font-semibold text-gray-700 border-b pb-3 mb-6">
                         Past Reflections ({entries.length})
                     </h2>
-                    
+
                     {entries.length === 0 ? (
                         <div className="text-center text-gray-500 p-10 border-2 border-dashed border-purple-300 rounded-xl bg-purple-50">
                             <BookOpen className="w-8 h-8 mx-auto mb-3 text-purple-400" />
@@ -291,23 +356,20 @@ const App: React.FC = () => {
                                             <Trash2 className="w-5 h-5" />
                                         </button>
                                     </div>
-                                    
+
                                     <p className="text-gray-600 mb-3 text-sm italic line-clamp-3 whitespace-pre-wrap">{entry.text}</p>
-                                    
+
                                     <div className="flex flex-wrap justify-between items-center text-xs text-gray-500 border-t pt-3 mt-3">
                                         <div className="flex items-center gap-2">
-                                            {/* Mood Analysis Tag */}
                                             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full font-semibold ${getMoodColor(entry.analysis.moodScore)}`}>
                                                 {getMoodIcon(entry.analysis.moodScore)}
                                                 Mood: {entry.analysis.moodScore}/10
                                             </span>
-                                            {/* Language Tag */}
                                             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
                                                 <Globe className="w-3 h-3" />
                                                 {entry.analysis.language.toUpperCase()}
                                             </span>
                                         </div>
-                                        {/* Timestamp */}
                                         <p className="text-gray-400 mt-2 sm:mt-0">
                                             {new Date(entry.timestamp).toLocaleDateString()}
                                             {' at '}
@@ -323,5 +385,5 @@ const App: React.FC = () => {
         </div>
     );
 };
-const Diary=App;
+
 export default Diary;

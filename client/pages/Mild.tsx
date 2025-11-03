@@ -1,9 +1,10 @@
 import React from "react";
-
+import Header from "@/components/Header";
 export default function MildServices() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-200 to-blue-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-3xl w-full animate-fadeIn text-center">
+      <Header/>
+      <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-4xl w-full animate-fadeIn text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-green-700 mb-8">
           🟢 Mild Support Resources
         </h1>

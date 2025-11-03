@@ -121,7 +121,7 @@ alert("Invalid credentials");
 setLoading(false);
 };
 
-  // image rows (compact sizes)
+ 
   const row1: Img[] = [
     {
       src: "https://api.builder.io/api/v1/image/assets/TEMP/d1687c77cac552eab64c4fb076822eb6731b2890?width=450",
@@ -297,7 +297,7 @@ setLoading(false);
         </div>
       </div>
 
-      {/* Inner Beacon Section (image left, text right) */}
+ 
       <section className="py-10 bg-white">
         <div className="container mx-auto px-4 flex flex-row md:flex-row items-center justify-center gap-12 text-center md:text-left">
           <img
@@ -318,7 +318,7 @@ setLoading(false);
         </div>
       </section>
 
-      {/* Modern Solutions / Phone mockup area (as requested) */}
+      
       <section className="py-16 bg-beacon-beige rounded-[50px] mx-4 my-5">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-5xl font-lato font-bold text-center text-gray-700 mb-12">
@@ -326,7 +326,7 @@ setLoading(false);
           </h2>
 
           <div className="grid lg:grid-cols-3 gap-8 items-center">
-            {/* left - video image */}
+   
             <div className="relative flex justify-center">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/1a10fc8516bd01697a4e42f2736ea683394320cc?width=788"
