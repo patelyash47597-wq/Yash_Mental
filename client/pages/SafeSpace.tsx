@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Diary from './Diary';
 import IB from './Image';
+import { nullable } from 'zod/v4-mini';
 
 const SOUNDSCAPES = [
-  { value: '', label: '-- Select --' },
-  { value: 'https://dl.sndup.net/9t2j/rain_relax.mp3', label: 'Rain' },
-  { value: 'https://dl.sndup.net/7sq8/ocean_waves.mp3', label: 'Ocean Waves' },
-  { value: 'https://dl.sndup.net/5qbn/forest_sounds.mp3', label: 'Forest' },
+    { value: '', label: '-- Select --' },
+    { value: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', label: 'Rain' },
+    { value: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', label: 'Ocean Waves' },
+    { value: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', label: 'Forest' },
 ];
+
 
 
 // --- SESSION OPTIONS ---
@@ -45,7 +47,7 @@ const SafeSpace: React.FC = () => {
     const [playbackError, setPlaybackError] = useState<string | null>(null); 
 
     // --- REFS for DOM and Intervals/Audio ---
-    const audioRef = useRef<HTMLAudioElement | null>(new Audio());
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const countdownTimerRef = useRef<number | null>(null);
     const breathingIntervalRef = useRef<number | null>(null);
     const breathingBallRef = useRef<HTMLDivElement>(null);
@@ -54,28 +56,42 @@ const SafeSpace: React.FC = () => {
     // --- AUDIO CONTROL FUNCTIONS ---
     const handlePlay = useCallback(() => {
         if (!selectedSoundscape) {
-            setPlaybackError("Please select a soundscape first!"); 
+            setPlaybackError("Please select a soundscape first!");
             return;
         }
-        const audio = audioRef.current;
-        if (audio) {
-            audio.src = selectedSoundscape;
-            audio.loop = true;
-            
-            setPlaybackError(null); 
 
-            audio.play().catch(e => {
-                console.error("Audio playback error (possible permission issue or bad format):", e);
-                // Updated message to reflect the format/loading issue as well
-                setPlaybackError("Playback blocked or file format unsupported. Click 'Play' again after selecting a sound.");
-            });
+        let audio = audioRef.current;
+
+        // Create audio only once
+        if (!audio) {
+            audio = new Audio(selectedSoundscape);
+            audio.loop = true;
+            audioRef.current = audio;
         }
+
+        // Change src ONLY if different
+        if (audio.src !== selectedSoundscape) {
+            audio.pause();
+            audio.src = selectedSoundscape;
+        }
+
+        setPlaybackError(null);
+
+        audio.play().catch(err => {
+            if (err.name !== "AbortError") {
+                console.error("Audio play failed:", err);
+                setPlaybackError("Audio playback blocked by browser.");
+            }
+        });
     }, [selectedSoundscape]);
 
     const handlePause = useCallback(() => {
-        audioRef.current?.pause();
-        setPlaybackError(null); 
+        if (audioRef.current) {
+            audioRef.current.pause();
+        }
+        setPlaybackError(null);
     }, []);
+
 
     // --- BREATHING LOGIC ---
     
