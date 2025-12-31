@@ -276,7 +276,7 @@ export default function Header() {
       )}
 
       {/* Animation */}
-      <style jsx>{`
+      <style>{`
         .animate-slideIn {
           animation: slideIn 0.25s ease-out;
         }
