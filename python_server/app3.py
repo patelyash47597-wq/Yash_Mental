@@ -1,9 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify
 from textblob import TextBlob
-from flask_cors import CORS
 
-meditation_app = Flask(__name__)
-CORS(meditation_app)
+meditation_bp = Blueprint("meditation", __name__)
 
 MEDITATIONS = {
     "happy": {
@@ -28,11 +26,11 @@ MEDITATIONS = {
     }
 }
 
-@meditation_app.route("/")
+@meditation_bp.route("/")
 def home():
     return jsonify({"message": "Meditation API running 🧘‍♂️"})
 
-@meditation_app.route("/detect_mood", methods=["POST"])
+@meditation_bp.route("/detect_mood", methods=["POST"])
 def detect_mood():
     data = request.get_json()
     text = data.get("text", "")
@@ -58,6 +56,3 @@ def detect_mood():
         "video": MEDITATIONS[mood]["video"],
         "audio": MEDITATIONS[mood]["audio"]
     })
-
-if __name__ == "__main__":
-    pass

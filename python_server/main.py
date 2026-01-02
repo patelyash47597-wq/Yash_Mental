@@ -1,28 +1,26 @@
-from threading import Thread
-from app import mira_app    
-from app2 import mood_app 
-from app3 import meditation_app  
+from flask import Flask
+from flask_cors import CORS
+import os
 
-def run_mira():
-    mira_app.run(port=5000, debug=True, use_reloader=False)
+from app import mira_bp
+from app2 import mood_bp
+from app3 import meditation_bp
 
-def run_mood():
-    mood_app.run(port=5001, debug=True, use_reloader=False)
+def create_app():
+    app = Flask(__name__)
+    CORS(app)
 
-def run_meditation():
-    meditation_app.run(port=5002, debug=True, use_reloader=False)
+    # register all modules
+    app.register_blueprint(mira_bp)
+    app.register_blueprint(mood_bp)
+    app.register_blueprint(meditation_bp)
 
-if __name__ == "__main__":  
-    print("🚀 Starting both Flask servers...")
+    return app
 
-    t1 = Thread(target=run_mira)
-    t2 = Thread(target=run_mood)
-    t3 = Thread(target=run_meditation)
+if __name__ == "__main__":
+    print("🚀 Starting Flask server...")
 
-    t1.start()
-    t2.start()
-    t3.start()
+    app = create_app()
+    port = int(os.environ.get("PORT", 5000))
 
-    t1.join()
-    t2.join()
-    t3.join()
+    app.run(host="0.0.0.0", port=port)
