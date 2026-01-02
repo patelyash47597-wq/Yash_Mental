@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from textblob import TextBlob
 
-meditation_bp = Blueprint("meditation", __name__)
+meditation_bp = Blueprint("meditation", __name__,url_prefix="/meditation" )
 
 MEDITATIONS = {
     "happy": {
