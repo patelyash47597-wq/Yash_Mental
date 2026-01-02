@@ -25,7 +25,7 @@ const MusicAssistant: React.FC = () => {
 
     if (!text) return alert("Please describe how you're feeling!");
 
-    const res = await fetch("https://yashatmental.onrender.com/meditation/detect_mood", {
+    const res = await fetch("https://yashatmental.onrender.com/detect_mood", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text })
