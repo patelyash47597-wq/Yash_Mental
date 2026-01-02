@@ -6,23 +6,27 @@ import * as express from "express";
 const app = createServer();
 const port = process.env.PORT || 3000;
 
-// In production, serve the built SPA files
+// ESM-safe __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// SPA build path
 const distPath = path.join(__dirname, "../spa");
 
-// Serve static files
+// Serve static assets
 app.use(express.static(distPath));
 
-// Handle React Router - serve index.html for all non-API routes
-app.get("/*", (req, res) => {
-  // Don't serve index.html for API routes
+// ✅ Express 5–safe SPA fallback
+app.use((req, res, next) => {
   if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
+    return next();
   }
 
   res.sendFile(path.join(distPath, "index.html"));
 });
+
+
+
 
 app.listen(port, () => {
   console.log(`🚀 Fusion Starter server running on port ${port}`);
