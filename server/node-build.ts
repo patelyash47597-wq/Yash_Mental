@@ -30,8 +30,8 @@ app.use((req, res, next) => {
 
 app.listen(port, () => {
   console.log(`🚀 Fusion Starter server running on port ${port}`);
-  console.log(`📱 Frontend: http://localhost:${port}`);
-  console.log(`🔧 API: http://localhost:${port}/api`);
+  console.log(`📱 Frontend: http://10.169.182.188:${port}`);
+  console.log(`🔧 API: http://10.169.182.188:${port}/api`);
 });
 
 // Graceful shutdown
