@@ -13,4 +13,6 @@ COPY . .
 ENV PORT=5000
 EXPOSE 5000
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "wsgi:app"]
+# Use the PORT environment variable provided by Render (or defaults to 5000)
+# Use shell form so $PORT is expanded at container start time.
+CMD ["sh", "-c", "gunicorn -w 4 -b 0.0.0.0:$PORT wsgi:app"]
