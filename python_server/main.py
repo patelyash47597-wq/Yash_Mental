@@ -6,6 +6,16 @@ from app import mira_bp
 from app2 import mood_bp
 from app3 import meditation_bp
 
+# Ensure minimal NLTK data for TextBlob is available in runtime environments
+try:
+    import nltk
+    # download 'punkt' tokenizer if missing (quiet to keep logs concise)
+    nltk.download('punkt', quiet=True)
+except Exception:
+    # If download fails (network restrictions during build), continue and
+    # TextBlob will raise descriptive errors at runtime if corpora are missing.
+    pass
+
 def create_app():
     app = Flask(__name__)
     CORS(app)

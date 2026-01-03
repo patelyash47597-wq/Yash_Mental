@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: beacon-python-server
+    env: docker
+    dockerfilePath: python_server/Dockerfile
+    branch: main
+    plan: free
+    buildCommand: null
+    startCommand: null
+    envVars:
+      - key: PORT
+        value: "5000"
+    healthCheckPath: "/api"

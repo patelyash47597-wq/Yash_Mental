@@ -25,7 +25,7 @@ const MeditationAssistant: React.FC = () => {
 
     if (!text) return alert("Describe your mood first!");
 
-    const res = await fetch("https://yashatmental.onrender.com/meditation/detect_mood", {
+    const res = await fetch("http://127.0.0.1:5000/meditation/detect_mood", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text })
